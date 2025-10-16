@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DateApp</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+    <div class="container mx-auto p-8">
+        <h1 class="text-4xl font-bold text-center mb-8">Days Left in the Year</h1>
+
+        <div class="max-w-md mx-auto bg-white rounded-lg shadow-md p-6">
+            <div class="flex items-center space-x-4">
+                <input type="date" id="dateInput" class="block w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md focus:border-blue-500 focus:outline-none focus:ring">
+                <button id="calculateBtn" class="px-6 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300">Calculate</button>
+            </div>
+            <div id="result" class="text-center mt-6 text-2xl font-semibold"></div>
+        </div>
+
+        <div class="max-w-2xl mx-auto mt-12">
+            <h2 class="text-2xl font-bold text-center mb-4">Today's Progress in the Year</h2>
+            <div class="w-full bg-gray-200 rounded-full h-6">
+                <div id="progressBar" class="bg-green-500 h-6 text-xs font-medium text-blue-100 text-center p-1 leading-none rounded-full" style="width: 0%"></div>
+            </div>
+            <div class="text-center mt-2 text-sm text-gray-600" id="progressText"></div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const calculateBtn = document.getElementById('calculateBtn');
+            const dateInput = document.getElementById('dateInput');
+            const resultDiv = document.getElementById('result');
+
+            const progressBar = document.getElementById('progressBar');
+            const progressText = document.getElementById('progressText');
+            const progressTitle = document.querySelector('h2');
+
+            function updateProgressBar(dateString) {
+                const date = new Date(dateString + 'T00:00:00Z');
+                const year = date.getUTCFullYear();
+
+                const isLeapYear = (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
+                const totalDaysInYear = isLeapYear ? 366 : 365;
+
+                const startOfYear = new Date(Date.UTC(year, 0, 1));
+                const daysPassed = (date - startOfYear) / (1000 * 60 * 60 * 24) + 1;
+                const progressPercentage = (daysPassed / totalDaysInYear) * 100;
+
+                progressBar.style.width = `${progressPercentage.toFixed(2)}%`;
+                progressBar.textContent = `${progressPercentage.toFixed(2)}%`;
+                progressText.textContent = `Day ${Math.floor(daysPassed)} of ${totalDaysInYear}`;
+            }
+
+            // Set default date to today and update progress bar
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const day = String(today.getDate()).padStart(2, '0');
+            const todayString = `${year}-${month}-${day}`;
+            dateInput.value = todayString;
+            updateProgressBar(todayString);
+
+            calculateBtn.addEventListener('click', () => {
+                const date = dateInput.value;
+                if (date) {
+                    fetch(`/api/days?date=${date}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.error) {
+                                resultDiv.textContent = data.error;
+                            } else {
+                                resultDiv.textContent = `${data.daysLeft} days left in the year.`;
+                                updateProgressBar(date);
+                                progressTitle.textContent = `Progress in ${new Date(date + 'T00:00:00Z').getUTCFullYear()}`;
+                            }
+                        });
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>
