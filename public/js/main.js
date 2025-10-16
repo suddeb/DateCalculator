@@ -1,9 +1,4 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const mainHeading = document.getElementById('main-heading');
-    const subHeading = document.getElementById('sub-heading');
-    const calculateBtn = document.getElementById('calculateBtn');
-    const dateInput = document.getElementById('dateInput');
-    const resultDiv = document.getElementById('result');
     const calculateBtn = document.getElementById('calculateBtn');
     const dateInput = document.getElementById('dateInput');
     const resultDiv = document.getElementById('result');
@@ -12,32 +7,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const progressText = document.getElementById('progressText');
     const progressTitle = document.querySelector('h2');
 
-    const headingText = "Your Date Calculator";
-    let i = 0;
-    function typeWriter() {
-        if (i < headingText.length) {
-            mainHeading.innerHTML += headingText.charAt(i);
-            i++;
-            setTimeout(typeWriter, 100);
-        } else {
-            mainHeading.classList.add('typing');
-            setTimeout(() => {
-                subHeading.style.opacity = 1;
-                subHeading.classList.add('fade-in');
-            }, 500);
-        }
-    }
-
-    typeWriter();
-
-    function updateProgressBar(dateString) {
-        const date = new Date(dateString + 'T00:00:00Z');
-        const year = date.getUTCFullYear();
-        const isLeapYear = (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
-        const totalDaysInYear = isLeapYear ? 366 : 365;
-        const startOfYear = new Date(Date.UTC(year, 0, 1));
-        const daysPassed = (date - startOfYear) / (1000 * 60 * 60 * 24) + 1;
-        const progressPercentage = (daysPassed / totalDaysInYear) * 100;
     function updateProgressBar(dateString) {
         const date = new Date(dateString + 'T00:00:00Z');
         const year = date.getUTCFullYear();
@@ -69,8 +38,6 @@ document.addEventListener('DOMContentLoaded', () => {
             fetch(`/api/days?date=${date}`)
                 .then(response => response.json())
                 .then(data => {
-                    resultDiv.classList.remove('flip');
-                    void resultDiv.offsetWidth; // Trigger reflow
                     if (data.error) {
                         resultDiv.textContent = data.error;
                     } else {
@@ -78,14 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         updateProgressBar(date);
                         progressTitle.textContent = `Progress in ${new Date(date + 'T00:00:00Z').getUTCFullYear()}`;
                     }
-                    resultDiv.classList.add('flip');
                 });
         }
     });
 });
-                });
-        }
-    });
-});
-
-module.exports = { updateProgressBar };
