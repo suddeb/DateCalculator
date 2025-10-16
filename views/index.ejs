@@ -107,6 +107,17 @@
             dateInput.value = todayString;
             updateProgressBar(todayString);
 
+            // Automatically perform calculation for today's date on page load
+            fetch(`/api/days?date=${todayString}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        resultDiv.textContent = data.error;
+                    } else {
+                        resultDiv.textContent = `${data.daysLeft} days left in the year.`;
+                    }
+                });
+
             calculateBtn.addEventListener('click', () => {
                 const date = dateInput.value;
                 if (date) {
