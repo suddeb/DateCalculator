@@ -9,7 +9,8 @@
 <body class="bg-gray-100 text-gray-800">
 
     <div class="container mx-auto p-8">
-        <h1 class="text-4xl font-bold text-center mb-8">Days Left in the Year</h1>
+        <h1 class="text-4xl font-bold text-center mb-2">Your Date Calculator</h1>
+        <p class="text-lg text-center text-gray-600 mb-8">Days Left in the Year</p>
 
         <div class="max-w-md mx-auto bg-white rounded-lg shadow-md p-6">
             <div class="flex items-center space-x-4">
@@ -60,7 +61,7 @@
             const month = String(today.getMonth() + 1).padStart(2, '0');
             const day = String(today.getDate()).padStart(2, '0');
             const todayString = `${year}-${month}-${day}`;
-            dateInput.value = todayString;
+            dateInput..value = todayString;
             updateProgressBar(todayString);
 
             calculateBtn.addEventListener('click', () => {
@@ -84,3 +85,18 @@
 
 </body>
 </html>
+
+<style>
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    .container {
+        max-width: 800px;
+    }
+    #result {
+        color: #2c5282; /* Tailwind's blue-800 */
+    }
+    #calculateBtn {
+        transition: background-color 0.3s ease-in-out;
+    }
+</style>
