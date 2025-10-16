@@ -5,14 +5,57 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DateApp</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: orange }
+        }
+        .typing {
+            overflow: hidden;
+            border-right: .15em solid orange;
+            white-space: nowrap;
+            margin: 0 auto;
+            letter-spacing: .15em;
+            animation: typing 3.5s steps(40, end), blink-caret .75s step-end infinite;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .fade-in {
+            animation: fadeIn 2s ease-in-out;
+        }
+        @keyframes flip {
+            from { transform: perspective(400px) rotateX(90deg); opacity: 0; }
+            to { transform: perspective(400px) rotateX(0deg); opacity: 1; }
+        }
+        .flip {
+            animation: flip 1s ease-in-out;
+        }
+        .glass {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        #calculateBtn:hover {
+            transform: scale(1.05);
+            transition: transform 0.2s ease-in-out;
+        }
+    </style>
 </head>
 <body class="bg-gray-100 text-gray-800">
 
     <div class="container mx-auto p-8">
-        <h1 class="text-4xl font-bold text-center mb-2">Your Date Calculator</h1>
-        <p class="text-lg text-center text-gray-600 mb-8">Days Left in the Year</p>
+        <h1 id="main-heading" class="text-4xl font-bold text-center mb-2"></h1>
+        <p id="sub-heading" class="text-lg text-center text-gray-600 mb-8 opacity-0">Days Left in the Year</p>
 
-        <div class="max-w-md mx-auto bg-white rounded-lg shadow-md p-6">
+        <div class="max-w-md mx-auto p-6 glass">
             <div class="flex items-center space-x-4">
                 <input type="date" id="dateInput" class="block w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md focus:border-blue-500 focus:outline-none focus:ring">
                 <button id="calculateBtn" class="px-6 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300">Calculate</button>
@@ -31,37 +74,52 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            const mainHeading = document.getElementById('main-heading');
+            const subHeading = document.getElementById('sub-heading');
             const calculateBtn = document.getElementById('calculateBtn');
             const dateInput = document.getElementById('dateInput');
             const resultDiv = document.getElementById('result');
-
             const progressBar = document.getElementById('progressBar');
             const progressText = document.getElementById('progressText');
             const progressTitle = document.querySelector('h2');
 
+            const headingText = "Your Date Calculator";
+            let i = 0;
+            function typeWriter() {
+                if (i < headingText.length) {
+                    mainHeading.innerHTML += headingText.charAt(i);
+                    i++;
+                    setTimeout(typeWriter, 100);
+                } else {
+                    mainHeading.classList.add('typing');
+                    setTimeout(() => {
+                        subHeading.style.opacity = 1;
+                        subHeading.classList.add('fade-in');
+                    }, 500);
+                }
+            }
+
+            typeWriter();
+
             function updateProgressBar(dateString) {
                 const date = new Date(dateString + 'T00:00:00Z');
                 const year = date.getUTCFullYear();
-
                 const isLeapYear = (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
                 const totalDaysInYear = isLeapYear ? 366 : 365;
-
                 const startOfYear = new Date(Date.UTC(year, 0, 1));
                 const daysPassed = (date - startOfYear) / (1000 * 60 * 60 * 24) + 1;
                 const progressPercentage = (daysPassed / totalDaysInYear) * 100;
-
                 progressBar.style.width = `${progressPercentage.toFixed(2)}%`;
                 progressBar.textContent = `${progressPercentage.toFixed(2)}%`;
                 progressText.textContent = `Day ${Math.floor(daysPassed)} of ${totalDaysInYear}`;
             }
 
-            // Set default date to today and update progress bar
             const today = new Date();
             const year = today.getFullYear();
             const month = String(today.getMonth() + 1).padStart(2, '0');
             const day = String(today.getDate()).padStart(2, '0');
             const todayString = `${year}-${month}-${day}`;
-            dateInput..value = todayString;
+            dateInput.value = todayString;
             updateProgressBar(todayString);
 
             calculateBtn.addEventListener('click', () => {
@@ -70,6 +128,8 @@
                     fetch(`/api/days?date=${date}`)
                         .then(response => response.json())
                         .then(data => {
+                            resultDiv.classList.remove('flip');
+                            void resultDiv.offsetWidth; // Trigger reflow
                             if (data.error) {
                                 resultDiv.textContent = data.error;
                             } else {
@@ -77,6 +137,7 @@
                                 updateProgressBar(date);
                                 progressTitle.textContent = `Progress in ${new Date(date + 'T00:00:00Z').getUTCFullYear()}`;
                             }
+                            resultDiv.classList.add('flip');
                         });
                 }
             });
@@ -85,18 +146,3 @@
 
 </body>
 </html>
-
-<style>
-    body {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-    .container {
-        max-width: 800px;
-    }
-    #result {
-        color: #2c5282; /* Tailwind's blue-800 */
-    }
-    #calculateBtn {
-        transition: background-color 0.3s ease-in-out;
-    }
-</style>
