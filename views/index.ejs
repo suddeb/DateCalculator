@@ -61,7 +61,7 @@
             const month = String(today.getMonth() + 1).padStart(2, '0');
             const day = String(today.getDate()).padStart(2, '0');
             const todayString = `${year}-${month}-${day}`;
-            dateInput..value = todayString;
+            dateInput.value = todayString;
             updateProgressBar(todayString);
 
             calculateBtn.addEventListener('click', () => {
