@@ -6,3 +6,6 @@ gha-creds-*.json
 
 # node modules
 node_modules/
+
+# Mac files
+.DS_Store
