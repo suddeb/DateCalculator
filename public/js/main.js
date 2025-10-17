@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const progressText = document.getElementById('progressText');
     const progressTitle = document.querySelector('h2');
     const leapYearMessage = document.getElementById('leapYearMessage');
-
+function updateProgressBar(dateString) {
     window.updateProgressBar = function(dateString) {
         const date = new Date(dateString + 'T00:00:00Z');
         const year = date.getUTCFullYear();
