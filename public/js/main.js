@@ -9,7 +9,9 @@ document.addEventListener('DOMContentLoaded', () => {
 function updateProgressBar(dateString) {
     window.updateProgressBar = function(dateString) {
         const date = new Date(dateString + 'T00:00:00Z');
-        const year = date.getUTCFullYear();
+function isLeapYear(year) {
+    return (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
+}
         const isLeapYear = (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
         const totalDaysInYear = isLeapYear ? 366 : 365;
         const startOfYear = new Date(Date.UTC(year, 0, 1));
