@@ -1,37 +1,35 @@
+function updateProgressBar(dateString) {
+    const date = new Date(dateString + 'T00:00:00Z');
+    const year = date.getUTCFullYear();
+    const isLeapYear = (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
+    const totalDaysInYear = isLeapYear ? 366 : 365;
+    const startOfYear = new Date(Date.UTC(year, 0, 1));
+    const daysPassed = (date - startOfYear) / (1000 * 60 * 60 * 24) + 1;
+    const progressPercentage = (daysPassed / totalDaysInYear) * 100;
+    const progressBar = document.getElementById('progressBar');
+    const progressText = document.getElementById('progressText');
+    progressBar.style.width = `${progressPercentage.toFixed(2)}%`;
+    progressBar.textContent = `${progressPercentage.toFixed(2)}%`;
+    progressText.textContent = `Day ${Math.floor(daysPassed)} of ${totalDaysInYear}`;
+}
+
+function updateLeapYearMessage(dateString) {
+    const date = new Date(dateString + 'T00:00:00Z');
+    const year = date.getUTCFullYear();
+    const isLeap = (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
+    const leapYearMessage = document.getElementById('leapYearMessage');
+    if (isLeap) {
+        leapYearMessage.classList.remove('hidden');
+    } else {
+        leapYearMessage.classList.add('hidden');
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     const calculateBtn = document.getElementById('calculateBtn');
     const dateInput = document.getElementById('dateInput');
     const resultDiv = document.getElementById('result');
-    const progressBar = document.getElementById('progressBar');
-    const progressText = document.getElementById('progressText');
     const progressTitle = document.querySelector('h2');
-    const leapYearMessage = document.getElementById('leapYearMessage');
-function updateProgressBar(dateString) {
-    window.updateProgressBar = function(dateString) {
-        const date = new Date(dateString + 'T00:00:00Z');
-function isLeapYear(year) {
-    return (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
-}
-        const isLeapYear = (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
-        const totalDaysInYear = isLeapYear ? 366 : 365;
-        const startOfYear = new Date(Date.UTC(year, 0, 1));
-        const daysPassed = (date - startOfYear) / (1000 * 60 * 60 * 24) + 1;
-        const progressPercentage = (daysPassed / totalDaysInYear) * 100;
-        progressBar.style.width = `${progressPercentage.toFixed(2)}%`;
-        progressBar.textContent = `${progressPercentage.toFixed(2)}%`;
-        progressText.textContent = `Day ${Math.floor(daysPassed)} of ${totalDaysInYear}`;
-    }
-
-    function updateLeapYearMessage(dateString) {
-        const date = new Date(dateString + 'T00:00:00Z');
-        const year = date.getUTCFullYear();
-        const isLeap = (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
-        if (isLeap) {
-            leapYearMessage.classList.remove('hidden');
-        } else {
-            leapYearMessage.classList.add('hidden');
-        }
-    }
 
     // Set default date to today and update progress bar
     const today = new Date();
@@ -40,8 +38,9 @@ function isLeapYear(year) {
     const day = String(today.getDate()).padStart(2, '0');
     const todayString = `${year}-${month}-${day}`;
     dateInput.value = todayString;
-    window.updateProgressBar(todayString);
+    updateProgressBar(todayString);
     updateLeapYearMessage(todayString);
+    progressTitle.textContent = `Progress in ${year}`;
 
     // Automatically perform calculation for today's date on page load
     fetch(`/api/days?date=${todayString}`)
@@ -64,7 +63,7 @@ function isLeapYear(year) {
                         resultDiv.textContent = data.error;
                     } else {
                         resultDiv.textContent = `${data.daysLeft} days left in the year.`;
-                        window.updateProgressBar(date);
+                        updateProgressBar(date);
                         updateLeapYearMessage(date);
                         progressTitle.textContent = `Progress in ${new Date(date + 'T00:00:00Z').getUTCFullYear()}`;
                     }
