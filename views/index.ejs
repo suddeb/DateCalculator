@@ -78,7 +78,7 @@
         <div class="max-w-2xl mx-auto mt-12 border-2 border-gray-300 rounded-lg p-6">
             <h2 class="text-2xl font-bold text-center mb-4">Today's Progress in the Year</h2>
             <div class="w-full bg-gray-200 rounded-full h-6">
-                <div id="progressBar" class="bg-green-500 h-6 text-xs font-medium text-blue-100 text-center p-1 leading-none rounded-full" style="width: 0%"></div>
+                <div id="progressBar" class="bg-yellow-500 h-6 text-xs font-medium text-blue-100 text-center p-1 leading-none rounded-full" style="width: 0%"></div>
             </div>
             <div class="text-center mt-2 text-sm text-gray-600" id="progressText"></div>
         </div>
@@ -87,3 +87,41 @@
     <script src="/js/main.js"></script>
 </body>
 </html>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const mainHeading = document.getElementById('main-heading');
+        const subHeading = document.getElementById('sub-heading');
+
+        mainHeading.classList.add('typing');
+        setTimeout(() => {
+            subHeading.classList.add('fade-in');
+        }, 3500);
+    });
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const calculateBtn = document.getElementById('calculateBtn');
+        const resultDiv = document.getElementById('result');
+
+        calculateBtn.addEventListener('click', function() {
+            resultDiv.classList.remove('flip');
+            void resultDiv.offsetWidth;
+            resultDiv.classList.add('flip');
+        });
+    });
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const dateInput = document.getElementById('dateInput');
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        let mm = today.getMonth() + 1;
+        let dd = today.getDate();
+
+        if (mm < 10) mm = '0' + mm;
+        if (dd < 10) dd = '0' + dd;
+
+        const formattedToday = yyyy + '-' + mm + '-' + dd;
+        dateInput.value = formattedToday;
+    });
+</script>
